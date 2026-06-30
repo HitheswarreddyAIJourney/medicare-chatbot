@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { LoginForm } from "@/components/LoginForm";
 import { ChatInterface } from "@/components/ChatInterface";
-import { Sidebar } from "@/components/Sidebar";
 
 export default function Home() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -79,8 +78,6 @@ export default function Home() {
         )}
       </main>
 
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 }

@@ -102,27 +102,27 @@ export function ChatInterface({ sidebarOpen, onSidebarToggle }: ChatInterfacePro
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 lg:h-[calc(100vh-4rem)]">
+    <div className="flex h-screen bg-[#07111f] text-slate-100 lg:h-[calc(100vh-4rem)]">
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={onSidebarToggle} />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.16),_transparent_35%),linear-gradient(135deg,_#07111f_0%,_#0f172a_100%)]">
         {/* Mobile Header */}
-        <header className="lg:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-gray-200 px-4 py-3">
+        <header className="lg:hidden sticky top-0 z-30 border-b border-white/10 bg-slate-950/80 px-4 py-3 backdrop-blur">
           <div className="flex items-center justify-between">
             <button
               onClick={onSidebarToggle}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600"
+              className="rounded-lg p-2 text-slate-300 hover:bg-white/10"
               aria-label="Open sidebar"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
             <div className="flex-1 text-center">
-              <h1 className="font-semibold text-gray-900">MediBot</h1>
-              <p className="text-xs text-gray-500">
+              <h1 className="font-semibold text-white">MediBot</h1>
+              <p className="text-xs text-slate-400">
                 {user ? `Logged in as ${user.fullName || user.username} (${user.role})` : "Not logged in"}
               </p>
             </div>
@@ -131,42 +131,71 @@ export function ChatInterface({ sidebarOpen, onSidebarToggle }: ChatInterfacePro
         </header>
 
         {/* Desktop Header */}
-        <header className="hidden lg:flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 sticky top-0 z-10">
+        <header className="hidden lg:flex items-center justify-between border-b border-white/10 bg-slate-950/70 px-6 py-4 backdrop-blur">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-teal-600 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600">
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">MediBot</h1>
-              <p className="text-sm text-gray-500">MediAssist Health Network Assistant</p>
+              <h1 className="text-xl font-bold text-white">MediBot</h1>
+              <p className="text-sm text-slate-400">MediAssist Health Network Assistant</p>
             </div>
           </div>
 
-          {/* User Badge */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100">
-              <span className="text-xs text-gray-500">Role:</span>
-              <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 rounded-full capitalize">
+            <div className="hidden sm:flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+              <span className="text-xs text-slate-400">Role:</span>
+              <span className="rounded-full bg-teal-500/20 px-2 py-0.5 text-xs font-medium text-teal-300 capitalize">
                 {user?.role.replace("_", " ") || "guest"}
               </span>
             </div>
-            <button
-              onClick={onSidebarToggle}
-              className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 lg:hidden"
-              aria-label="Open sidebar"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
           </div>
         </header>
 
+        {/* Composer */}
+        <form onSubmit={handleSend} className="border-t border-white/10 bg-slate-950/70 p-4 backdrop-blur lg:p-6">
+          <div className="mx-auto flex max-w-4xl flex-col gap-3">
+            <div className="flex items-end gap-3 rounded-2xl border border-white/10 bg-slate-900/70 p-3 shadow-2xl shadow-black/30">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask a question about clinical protocols, nursing procedures, billing codes, equipment manuals..."
+                rows={1}
+                className="max-h-[180px] flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm text-slate-100 outline-none placeholder:text-slate-500 disabled:bg-transparent"
+                disabled={isLoading}
+                aria-label="Chat input"
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !input.trim() || !token}
+                className="flex-shrink-0 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 p-3 text-white transition hover:from-teal-400 hover:to-cyan-500 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Send message"
+              >
+                {isLoading ? (
+                  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            <p className="text-center text-xs text-slate-500">
+              Press Enter to send • Shift+Enter for new line
+            </p>
+          </div>
+        </form>
+
         {/* Messages Area */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6 pt-20 lg:pt-6">
-          <div className="max-w-3xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto px-4 py-4 lg:px-6 lg:py-6">
+          <div className="mx-auto flex max-w-4xl flex-col gap-4">
             {messages.map((message) => (
               <Message key={message.id} message={message} />
             ))}
@@ -176,63 +205,24 @@ export function ChatInterface({ sidebarOpen, onSidebarToggle }: ChatInterfacePro
 
         {/* Error Toast */}
         {error && (
-          <div className="fixed bottom-4 right-4 z-50 p-4 bg-red-50 border border-red-200 rounded-lg shadow-lg max-w-md animate-slide-in" role="alert">
+          <div className="fixed bottom-4 right-4 z-50 max-w-md rounded-lg border border-red-400/30 bg-red-950/90 p-4 shadow-2xl shadow-black/30" role="alert">
             <div className="flex items-start gap-2">
-              <svg className="flex-shrink-0 w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
-              <p className="text-sm text-red-800">{error}</p>
+              <p className="text-sm text-red-200">{error}</p>
               <button
                 onClick={() => setError("")}
-                className="ml-2 text-red-500 hover:text-red-700"
+                className="ml-2 text-red-300 hover:text-red-100"
                 aria-label="Dismiss error"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
           </div>
         )}
-
-        {/* Input Area */}
-        <form onSubmit={handleSend} className="p-4 lg:p-6 bg-white border-t border-gray-200">
-          <div className="max-w-3xl mx-auto">
-            <div className="flex items-end gap-3">
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask a question about clinical protocols, nursing procedures, billing codes, equipment manuals..."
-                rows={1}
-                className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none bg-gray-50 disabled:bg-gray-100 max-h-[150px]"
-                disabled={isLoading}
-                aria-label="Chat input"
-              />
-              <button
-                type="submit"
-                disabled={isLoading || !input.trim() || !token}
-                className="flex-shrink-0 p-3 bg-gradient-to-r from-blue-teal text-white rounded-xl hover:from-blue-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="Send message"
-              >
-                {isLoading ? (
-                  <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
-                )}
-              </button>
-            </div>
-            <p className="mt-2 text-xs text-gray-500 text-center">
-              Press Enter to send • Shift+Enter for new line
-            </p>
-          </div>
-        </form>
       </div>
     </div>
   );
