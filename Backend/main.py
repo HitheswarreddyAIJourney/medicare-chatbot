@@ -13,6 +13,7 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
+import uvicorn
 
 from .schema import HealthResponse, LoginRequest, LoginResponse, CollectionsResponse, UserRecord, ChatRequest, ChatResponse, Source
 from .constants import QDRANT_URL, ALL_ROLES, ROLE_TO_COLLECTIONS, SQL_DB_PATH, SQL_RAG_ROLES
@@ -37,17 +38,17 @@ async def lifespan(app: FastAPI):
     log.info("Booting MedicareBot…")
     try:
         client = QdrantClient(url=QDRANT_URL, timeout=10.0)
-        # Force a round trip so a down Qdrant fails fast at boot, not on first /chat.
+        # Probe Qdrant once during startup, but do not block the API if the
+        # vector store is unavailable. SQL-backed questions should still work.
         client.get_collections()
+        log.info("Qdrant is reachable at %s", QDRANT_URL)
     except Exception as e:
-        mode = f"server at {QDRANT_URL}"
-        log.error(
-            "Cannot reach Qdrant (%s): %s\n"
-            "  • Docker:    docker run -d --name medibot-qdrant -p 6333:6333 qdrant/qdrant\n"
-            "  • Verify:    curl http://localhost:6333/healthz",
-            mode, e,
+        log.warning(
+            "Qdrant is unavailable at startup (%s): %s. "
+            "SQL-backed questions will still work, but hybrid retrieval will fail until Qdrant is available.",
+            QDRANT_URL,
+            e,
         )
-        raise
 
     # Warm up models in the background-ish (synchronous but once).
     try:
@@ -69,8 +70,12 @@ app = FastAPI(
     title="Medical Chatbot API",
     description="API for a medical chatbot that provides health advice and information.",
     version="1.0.0",
-    lifespan= lifespan
+    lifespan=lifespan,
 )
+
+
+if __name__ == "__main__":
+    uvicorn.run("Backend.main:app", host="0.0.0.0", port=8000, reload=False)
 
 app.add_middleware(
     CORSMiddleware,

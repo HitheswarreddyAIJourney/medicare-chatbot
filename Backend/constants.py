@@ -31,12 +31,12 @@ JWT_EXPIRES_MIN: int = int(os.getenv("JWT_EXPIRES_MIN", "120"))
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SQL_DB_PATH: str = PROJECT_ROOT / "DataLoader" / "db" / "mediassist.db"
+SQL_DB_PATH: str = PROJECT_ROOT / "DataSources" / "db" / "mediassist.db"
 SQL_RAG_ROLES = {"billing_executive", "admin"}
 
 
 # llm.py
-GROQ_MODEL = "openai/gpt-oss-20b"
+GROQ_MODEL = "qwen/qwen3-32b"
 
 # Data Loader
 EMBED_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -60,4 +60,11 @@ Keep answers concise and friendly.
 Context:
 {context}
 """
+
+SQL_ANSWER_SYSTEM = (
+    "You are a healthcare operations analyst. Summarise the SQL result table "
+    "below in plain English, answering the user's question directly. "
+    "If the question asks for a count/total, state the number. "
+    "Be concise (under 120 words). Do not invent values."
+)
 
