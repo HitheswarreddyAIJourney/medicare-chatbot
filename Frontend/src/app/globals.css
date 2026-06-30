@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-blue-teal: #0d9488;
+  }
+
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply font-sans antialiased text-gray-900;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+
+  /* Markdown styling */
+  .prose {
+    @apply text-gray-900;
+  }
+
+  .prose p {
+    @apply mb-2 leading-relaxed;
+  }
+
+  .prose p:last-child {
+    @apply mb-0;
+  }
+
+  .prose strong {
+    @apply font-semibold;
+  }
+
+  .prose em {
+    @apply italic;
+  }
+
+  .prose code {
+    @apply px-1.5 py-0.5 rounded text-sm font-mono bg-gray-100 text-gray-800;
+  }
+
+  .prose pre {
+    @apply p-3 rounded-lg overflow-x-auto bg-gray-900 text-gray-100;
+  }
+
+  .prose pre code {
+    @apply p-0 bg-transparent text-inherit font-mono text-sm;
+  }
+
+  .prose ul {
+    @apply list-disc list-inside space-y-1 mb-2;
+  }
+
+  .prose ol {
+    @apply list-decimal list-inside space-y-1 mb-2;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-blue-300 pl-3 italic text-gray-600 my-2;
+  }
+
+  .prose a {
+    @apply text-blue-600 hover:text-blue-700 underline;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

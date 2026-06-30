@@ -1,0 +1,77 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+# Local auth and demo credentials
+backend/data/users.json
+
+# API keys, tokens, secrets (generic patterns)
+*secret*
+*token*
+*api*key*
+*credential*
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Local caches and storage
+models_cache/
+.qdrant_storage/
+qdrant_storage/
+*.log
+*.log.*
+
+# Coverage reports
+coverage/
+.nyc_output/
+*.lcov
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data sources (PDFs, documents) - large files, not for version control
+DataSources/
+
+# Vector database storage
+qdrant_storage/
+*.sqlite
+*.db
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+temp/
