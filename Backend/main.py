@@ -179,6 +179,8 @@ def chat(req: ChatRequest, user: UserRecord = Depends(get_current_user)) -> Chat
 
     log.info("[chat] hybrid_ok role=%s elapsed=%.2fs sources=%d",
              role, time.time() - t0, len(result["sources"]))
+    normalized_sources = [Source(**s) for s in result["sources"]]
+    log.info("answer:%s, sources:%s", result["answer"], normalized_sources)
     return ChatResponse(
         answer=result["answer"],
         sources=[Source(**s) for s in result["sources"]],

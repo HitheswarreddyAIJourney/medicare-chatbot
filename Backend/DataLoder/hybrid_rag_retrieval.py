@@ -1,11 +1,22 @@
 from typing import Dict, Any
 from langchain_classic.retrievers import ContextualCompressionRetriever
+
+
+def _normalize_section_title(value: Any) -> str:
+    """Convert heading metadata to a single string for API compatibility."""
+    if isinstance(value, list):
+        cleaned = [str(item).strip() for item in value if str(item).strip()]
+        return " / ".join(cleaned) if cleaned else ""
+    if value is None:
+        return ""
+    return str(value)
 from langchain_qdrant import QdrantVectorStore, RetrievalMode
 from ..constants import HYBRID_TOP_K, CLIENT, COLLECTION_NAME, SYSTEM_PROMPT
 from qdrant_client.models import (
     Distance, VectorParams, PointStruct,
     Filter, FieldCondition, MatchValue,
 )
+import logging
 from langchain_classic.retrievers.document_compressors import CrossEncoderReranker
 from langchain_community.cross_encoders import HuggingFaceCrossEncoder
 from .llm import llm
@@ -13,6 +24,8 @@ from langchain_classic.chains.retrieval import create_retrieval_chain
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
 from ..data_loader import dense_embeddings, sparse_embeddings
+
+log = logging.getLogger(__name__)
 
 
 vectorstore = QdrantVectorStore(
@@ -72,14 +85,19 @@ def _build_reranking_chain(role: str):
 def ask_reranking(question: str, role: str) -> Dict[str, Any]:
     reranking_rag_chain = _build_reranking_chain(role)
     result = reranking_rag_chain.invoke({"input": question})
-    
-    # Convert Document objects to dicts matching Source schema
+    log.info("Reranking result: %s", result.get("context"))
+
+    # Convert Document objects to dicts matching Source schema.
+    # Some documents provide headings as lists, so normalize them to strings.
     sources = []
     for doc in result.get("context", []):
+        metadata = doc.metadata.get("dl_meta", {}) or {}
+        origin = metadata.get("origin", {}) or {}
+        headings = metadata.get("headings", "")
         sources.append({
-            "source_document": doc.metadata.get("source_document", ""),
-            "section_title": doc.metadata.get("section_title", ""),
-            "collection": doc.metadata.get("collection", ""),
+            "source_document": origin.get("filename", ""),
+            "section_title": _normalize_section_title(headings),
+            "collection": doc.metadata.get("_collection_name", ""),
         })
     result["sources"] = sources
     return result
